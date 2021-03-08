@@ -23,10 +23,15 @@ app.get('/client.js', (req, res) => {
 })
 
 io.on('connection', socket => {
-    chat.online++
+    // флаг addedUser что бы после перезапуска сервера, если user был уже 'залогинен', и он вышел, не отнималось в минус один (ноль)
+    let addedUser = false
 
     socket.on('disconnect', () => {
+        // если user не был залогинен (не введен ник) - выходим
+        if (!addedUser) return
+
         chat.online--
+        socket.broadcast.emit('chat left', {nick: socket.username})
     })
 
     socket.on('chat message', client => {
@@ -35,8 +40,19 @@ io.on('connection', socket => {
 
     // отправляем число онлайна каждую секунду
     setInterval(function(){
-        socket.emit('get chat online', chat.online); 
-    }, 1000);
+        socket.emit('get chat online', chat.online)
+    }, 1000)
+
+    socket.on('chat join', client => {
+        // если user уже вводил ник - выходим
+        if (addedUser) return
+
+        addedUser = true
+
+        chat.online++
+        socket.username = client.nick
+        socket.broadcast.emit('chat new join', client)
+    })
 })
 
 http.listen(3000, () => {
