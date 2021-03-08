@@ -27,6 +27,7 @@ form.addEventListener('submit', e => {
     let inputText = input.value
     if(inputText) {
         socket.emit('chat message', {nick: user.nick, msg: inputText})
+        addMessageInChat({nick: user.nick, color: system.color.default}, {msg: inputText, color: system.color.default})
         input.value = ''
     }
 })
