@@ -6,6 +6,10 @@ const path = require('path')
 const pathClient = path.join(__dirname, '../client')
 const pathServer = path.join(__dirname, '../server')
 
+let chat = {
+    online: 0
+}
+
 app.get('/', (req, res) => {
     res.sendFile(pathClient + '/index.html')
 })
@@ -19,15 +23,20 @@ app.get('/client.js', (req, res) => {
 })
 
 io.on('connection', socket => {
-    console.log('a user connected')
+    chat.online++
 
     socket.on('disconnect', () => {
-        console.log('user disconnected')
+        chat.online--
     })
 
     socket.on('chat message', client => {
         socket.broadcast.emit('chat message', client)
     })
+
+    // отправляем число онлайна каждую секунду
+    setInterval(function(){
+        socket.emit('get chat online', chat.online); 
+    }, 1000);
 })
 
 http.listen(3000, () => {

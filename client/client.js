@@ -9,9 +9,12 @@ let formNickBlock = false
 const formNick = document.getElementById('form-insert-nick')
 const inputNick = document.getElementById('nick-input')
 
+const spanOnline = document.querySelector('.statistics__num')
+
 let user = {
-    nick: ''
+    nick: 'Tester'
 }
+checkExistenceOfNick()
 
 let system = {
     color: {
@@ -52,6 +55,17 @@ formNick.addEventListener('submit', e => {
 socket.on('chat message', res => {
     addMessageInChat({nick: res.nick, color: system.color.default}, {msg: res.msg, color: system.color.default})
 })
+
+socket.on('get chat online', online => {
+    spanOnline.textContent = online
+})
+
+// Не показывать окно с вводом ника если ник уже есть
+function checkExistenceOfNick() {
+    if (user.nick === '') return
+
+    document.querySelector('.insert-nick').classList.add('display-none')
+}
 
 function hideBlock(elem, $elemFocus = false) {
     elem.classList.add('hidden-block')
