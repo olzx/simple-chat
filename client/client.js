@@ -11,8 +11,11 @@ const inputNick = document.getElementById('nick-input')
 
 const spanOnline = document.querySelector('.statistics__num')
 
-let user = {
-    nick: ''
+const ulUsers = document.querySelector('.users')
+
+let localUser = {
+    nick: '',
+    hasAuth: false
 }
 checkExistenceOfNick()
 
@@ -30,8 +33,8 @@ form.addEventListener('submit', e => {
 
     let inputText = input.value
     if(inputText) {
-        socket.emit('chat message', {nick: user.nick, msg: inputText})
-        addMessageInChat({nick: user.nick, color: system.color.green}, {msg: inputText, color: system.color.default})
+        socket.emit('chat message', {nick: localUser.nick, msg: inputText})
+        addMessageInChat({nick: localUser.nick, color: system.color.green}, {msg: inputText, color: system.color.default})
         input.value = ''
     }
 })
@@ -45,35 +48,55 @@ formNick.addEventListener('submit', e => {
     if (inputText) {
         formNickBlock = true
 
-        user.nick = inputText
+        localUser.nick = inputText
+        localUser.hasAuth = true
         inputNick.value = ''
 
         hideBlock(document.querySelector('.insert-nick'), input)
-        addMessageInChat({nick: '[System]', color: system.color.orange}, {msg: `${user.nick}, добро пожаловать.`, color: system.color.green})
+        addMessageInChat({nick: '[System]', color: system.color.orange}, {msg: `${localUser.nick}, добро пожаловать.`, color: system.color.green})
     
-        socket.emit('chat join', {nick: user.nick})
+        socket.emit('chat join', {nick: localUser.nick})
+        socket.emit('get chat all users')
     }
 })
 
 socket.on('chat message', res => {
+    if (!localUser.hasAuth) return
+
     addMessageInChat({nick: res.nick, color: system.color.default}, {msg: res.msg, color: system.color.default})
 })
 
 socket.on('get chat online', online => {
+    if (!localUser.hasAuth) return
+
     spanOnline.textContent = online
 })
 
 socket.on('chat new join', user => {
+    if (!localUser.hasAuth) return
+
     addMessageInChat({nick: '[Server]', color: system.color.red}, {msg: `${user.nick} зашел к нам в чат.`, color: system.color.default})
+
+    changeUlUsers('add', user.nick)
 })
 
 socket.on('chat left', user => {
+    if (!localUser.hasAuth) return
+
     addMessageInChat({nick: '[Server]', color: system.color.red}, {msg: `${user.nick} вышел из чата.`, color: system.color.default})
+
+    changeUlUsers('remove', user.nick)
+})
+
+socket.on('get chat all users', users => {
+    if (!localUser.hasAuth) return
+    
+    users.forEach(user => changeUlUsers('add', user))
 })
 
 // Не показывать окно с вводом ника если ник уже есть
 function checkExistenceOfNick() {
-    if (user.nick === '') return
+    if (localUser.nick === '') return
 
     document.querySelector('.insert-nick').classList.add('display-none')
 }
@@ -107,4 +130,22 @@ function addMessageInChat(nick, msg) {
     messages.appendChild(li)
 
     li.scrollIntoView({behavior: "smooth"})
+}
+
+function changeUlUsers(action, nick) {
+    switch (action) {
+        case 'add':
+            let li = document.createElement('li')
+            li.className = 'member'
+            li.innerText = nick
+            ulUsers.append(li)
+
+            break;
+        case 'remove':
+            const $elements = [...ulUsers.children]
+            const $findElem = $elements.filter(elem => elem.innerText === nick)
+            $findElem[0].remove()
+
+            break;
+    }
 }

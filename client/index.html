@@ -14,27 +14,34 @@
             <h2>Небольшой чат =0)</h2>
         </div>
         <div class="chat-window">
-            <div class="statistics">
-                <div class="statistics__online">
-                    <div class="statistics__pulsating">
-                        <div class="pulsating-circle"></div>
-                    </div>
-                    <div class="statistics__info">
-                        <span class="statistics__num">0</span>
-                        <small>онлайн</small>
+            <div class="chat-wrapper">
+                <div class="statistics">
+                    <div class="statistics__online">
+                        <div class="statistics__pulsating">
+                            <div class="pulsating-circle"></div>
+                        </div>
+                        <div class="statistics__info">
+                            <span class="statistics__num">0</span>
+                            <small>онлайн</small>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <ul id="messages"></ul>
-            <form class="form" id="form" action="">
-                <input id="input" autocomplete="off" placeholder="Отправить сообщение" /><button>Чат</button>
-            </form>
-            <div class="insert-nick">
-                <h3>Введите свой ник:</h3>
-                <form class="form" id="form-insert-nick" action="">
-                    <input class="username-input" id="nick-input" type="text" maxlength="14" autocomplete="off">
-                    <button class="button-save">Сохранить</button>
+                <ul id="messages"></ul>
+                <form class="form" id="form" action="">
+                    <input id="input" autocomplete="off" placeholder="Отправить сообщение" /><button>Чат</button>
                 </form>
+                <div class="insert-nick">
+                    <h3>Введите свой ник:</h3>
+                    <form class="form" id="form-insert-nick" action="">
+                        <input class="username-input" id="nick-input" type="text" maxlength="14" autocomplete="off">
+                        <button class="button-save">Сохранить</button>
+                    </form>
+                </div>
+            </div>
+            <div class="users-wrapper">
+                <h3>Участники:</h3>
+                <ul class="users">
+                </ul>
             </div>
         </div>
     </div>

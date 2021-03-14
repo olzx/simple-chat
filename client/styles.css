@@ -51,6 +51,11 @@ body {
     background: #1B1B1F;
     border: 1px solid #303032;
     border-radius: 4px;
+
+    display: flex;
+}
+
+.chat-wrapper {
     width: 360px;
 }
 
@@ -346,4 +351,30 @@ body {
     100% {
         transform: scale(.8);
     }
+}
+
+/* 
+    users-window 
+*/
+.users-wrapper {
+    background-color: #2f3136;
+    color: #8e9297;
+
+    padding: 24px 8px 0 16px;
+}
+.users-wrapper li, ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+.users-wrapper li {
+    padding: 3px 0 3px 6px;
+}
+.users-wrapper h3 {
+    margin: 0;
+    margin-bottom: 10px;
+
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
 }

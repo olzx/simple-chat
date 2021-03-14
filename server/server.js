@@ -7,7 +7,8 @@ const pathClient = path.join(__dirname, '../client')
 const pathServer = path.join(__dirname, '../server')
 
 let chat = {
-    online: 0
+    online: 0,
+    users: []
 }
 
 app.get('/', (req, res) => {
@@ -31,6 +32,7 @@ io.on('connection', socket => {
         if (!addedUser) return
 
         chat.online--
+        chat.users.splice(chat.users.indexOf(socket.username), 1)
         socket.broadcast.emit('chat left', {nick: socket.username})
     })
 
@@ -50,8 +52,13 @@ io.on('connection', socket => {
         addedUser = true
 
         chat.online++
+        chat.users.push(client.nick)
         socket.username = client.nick
         socket.broadcast.emit('chat new join', client)
+    })
+
+    socket.on('get chat all users', () => {
+        socket.emit('get chat all users', chat.users)
     })
 })
 
