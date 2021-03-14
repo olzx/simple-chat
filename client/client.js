@@ -12,7 +12,7 @@ const inputNick = document.getElementById('nick-input')
 const spanOnline = document.querySelector('.statistics__num')
 
 let user = {
-    nick: 'Tester'
+    nick: ''
 }
 checkExistenceOfNick()
 
@@ -20,7 +20,8 @@ let system = {
     color: {
         default: '#efeff1',
         orange: '#f48b29',
-        green: '#16c79a'
+        green: '#16c79a',
+        red: '#FF0000'
     }
 }
 
@@ -30,7 +31,7 @@ form.addEventListener('submit', e => {
     let inputText = input.value
     if(inputText) {
         socket.emit('chat message', {nick: user.nick, msg: inputText})
-        addMessageInChat({nick: user.nick, color: system.color.default}, {msg: inputText, color: system.color.default})
+        addMessageInChat({nick: user.nick, color: system.color.green}, {msg: inputText, color: system.color.default})
         input.value = ''
     }
 })
@@ -49,6 +50,8 @@ formNick.addEventListener('submit', e => {
 
         hideBlock(document.querySelector('.insert-nick'), input)
         addMessageInChat({nick: '[System]', color: system.color.orange}, {msg: `${user.nick}, добро пожаловать.`, color: system.color.green})
+    
+        socket.emit('chat join', {nick: user.nick})
     }
 })
 
@@ -58,6 +61,14 @@ socket.on('chat message', res => {
 
 socket.on('get chat online', online => {
     spanOnline.textContent = online
+})
+
+socket.on('chat new join', user => {
+    addMessageInChat({nick: '[Server]', color: system.color.red}, {msg: `${user.nick} зашел к нам в чат.`, color: system.color.default})
+})
+
+socket.on('chat left', user => {
+    addMessageInChat({nick: '[Server]', color: system.color.red}, {msg: `${user.nick} вышел из чата.`, color: system.color.default})
 })
 
 // Не показывать окно с вводом ника если ник уже есть

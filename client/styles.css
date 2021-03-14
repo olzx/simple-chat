@@ -110,6 +110,7 @@ body {
 
 #messages {
     min-height: 350px;
+    max-height: 350px;
 
     list-style-type: none;
     margin: 0;
